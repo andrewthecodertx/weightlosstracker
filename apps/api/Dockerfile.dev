@@ -1,0 +1,27 @@
+FROM node:20-alpine
+
+# Install pnpm
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
+
+# Install dependencies
+RUN pnpm install
+
+# Copy prisma schema
+COPY prisma ./prisma
+
+# Generate Prisma client
+RUN pnpm exec prisma generate
+
+# Copy source code
+COPY . .
+
+# Expose ports
+EXPOSE 4000 5555
+
+# Start development server
+CMD ["pnpm", "run", "dev"]

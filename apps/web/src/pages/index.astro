@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/react/Hero';
+---
+
+<Layout title="Home">
+  <main>
+    <Hero client:load />
+
+    <section class="py-16 px-4 max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          Track Your Journey, Together
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Join teams, compete in challenges, and stay motivated with a supportive community
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="card text-center">
+          <div class="text-5xl mb-4">📊</div>
+          <h3 class="text-xl font-semibold mb-2">Track Progress</h3>
+          <p class="text-gray-600">
+            Log your weight daily and visualize your journey with beautiful charts
+          </p>
+        </div>
+
+        <div class="card text-center">
+          <div class="text-5xl mb-4">👥</div>
+          <h3 class="text-xl font-semibold mb-2">Join Teams</h3>
+          <p class="text-gray-600">
+            Compete with friends and stay accountable in team challenges
+          </p>
+        </div>
+
+        <div class="card text-center">
+          <div class="text-5xl mb-4">🏆</div>
+          <h3 class="text-xl font-semibold mb-2">Earn Achievements</h3>
+          <p class="text-gray-600">
+            Unlock badges and celebrate milestones on your weight loss journey
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-primary-600 text-white py-16 px-4">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4">Ready to Start Your Journey?</h2>
+        <p class="text-xl mb-8">Join thousands of users transforming their lives</p>
+        <div class="flex gap-4 justify-center">
+          <a href="/register" class="btn bg-white text-primary-600 hover:bg-gray-100">
+            Get Started Free
+          </a>
+          <a href="/login" class="btn bg-primary-700 hover:bg-primary-800">
+            Sign In
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
