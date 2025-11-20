@@ -1,10 +1,12 @@
 # Weight Tracker
 
-A comprehensive weight loss tracking application with team features, social posts, real-time messaging, and challenges.
+A comprehensive weight loss tracking application with team features, social
+posts, real-time messaging, and challenges.
 
 ## Tech Stack
 
 ### Frontend
+
 - **Astro 4.x** - Server-first web framework
 - **React 18** - Interactive components
 - **Svelte 4** - Lightweight animations
@@ -13,6 +15,7 @@ A comprehensive weight loss tracking application with team features, social post
 - **Recharts** - Data visualization
 
 ### Backend
+
 - **Node.js 20** - Runtime
 - **Express 4** - Web framework
 - **TypeScript 5** - Type safety
@@ -22,6 +25,7 @@ A comprehensive weight loss tracking application with team features, social post
 - **Socket.io 4** - Real-time communication
 
 ### Development Tools
+
 - **Docker & Docker Compose** - Containerization
 - **pnpm** - Fast package manager
 - **ESLint & Prettier** - Code quality
@@ -85,6 +89,7 @@ docker-compose logs -f
 ```
 
 This will start:
+
 - **PostgreSQL** on `localhost:5432`
 - **Redis** on `localhost:6379`
 - **Redis Commander** (GUI) on `http://localhost:8081`
@@ -105,11 +110,11 @@ docker-compose exec api pnpm db:seed
 
 ### 4. Access the Application
 
-- **Frontend**: http://localhost or http://localhost:3000
-- **API**: http://localhost/api or http://localhost:4000
-- **Prisma Studio**: http://localhost:5555 (run `pnpm db:studio` in api container)
-- **Redis Commander**: http://localhost:8081
-- **MailHog**: http://localhost:8025
+- **Frontend**: <http://localhost> or <http://localhost:3000>
+- **API**: <http://localhost/api> or <http://localhost:4000>
+- **Prisma Studio**: <http://localhost:5555> (run `pnpm db:studio` in api container)
+- **Redis Commander**: <http://localhost:8081>
+- **MailHog**: <http://localhost:8025>
 
 ### 5. Test Credentials
 
@@ -237,7 +242,7 @@ cd apps/api
 pnpm db:studio
 ```
 
-Access at: http://localhost:5555
+Access at: <http://localhost:5555>
 
 ### Creating Migrations
 
@@ -253,7 +258,7 @@ pnpm db:migrate
 ### Reset Database
 
 ```bash
-# ⚠️ This will delete all data
+# This will delete all data
 docker-compose exec api npx prisma migrate reset
 
 # Then re-seed
@@ -262,7 +267,8 @@ docker-compose exec api pnpm db:seed
 
 ## Redis Management
 
-Access **Redis Commander** at http://localhost:8081 to:
+Access **Redis Commander** at <http://localhost:8081> to:
+
 - View cached data
 - Monitor keys and values
 - Clear cache manually
@@ -272,7 +278,7 @@ Access **Redis Commander** at http://localhost:8081 to:
 
 All emails are caught by **MailHog** during development:
 
-- Web UI: http://localhost:8025
+- Web UI: <http://localhost:8025>
 - SMTP: localhost:1025
 
 ## Code Quality
@@ -300,11 +306,13 @@ pnpm format
 ### Pre-commit Hooks
 
 Husky runs automatically on `git commit`:
+
 - Lints staged files
 - Formats code
 - Type checks
 
 To bypass (not recommended):
+
 ```bash
 git commit --no-verify
 ```
@@ -331,6 +339,7 @@ pnpm test:coverage
 ### Test Coverage
 
 Coverage threshold is set to 80% for:
+
 - Branches
 - Functions
 - Lines
@@ -383,7 +392,7 @@ docker-compose logs <service-name>
 # Rebuild containers
 docker-compose up -d --build
 
-# Remove volumes and rebuild (⚠️ deletes data)
+# Remove volumes and rebuild (deletes data)
 docker-compose down -v
 docker-compose up -d --build
 ```
@@ -452,6 +461,7 @@ PUBLIC_API_URL=http://localhost/api
 See [REQUIREMENTS.md](./REQUIREMENTS.md) for production deployment guide.
 
 Key changes for production:
+
 1. Update environment variables
 2. Enable HTTPS
 3. Use production database
@@ -463,12 +473,12 @@ Key changes for production:
 ## Project Documentation
 
 - **[REQUIREMENTS.md](./REQUIREMENTS.md)** - Complete technical requirements
-- **[projectplan.md](./projectplan.md)** - Original project planning
 
 ## API Documentation
 
 Once the API is running, Swagger documentation will be available at:
-- http://localhost:4000/api-docs (coming soon)
+
+- <http://localhost:4000/api-docs> (coming soon)
 
 ## Contributing
 
@@ -491,15 +501,15 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## License
 
-[Add your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE)
+file for details.
 
 ## Support
 
 For issues and questions:
+
 - Open an issue on GitHub
 - Check existing documentation
 - Review troubleshooting section
 
 ---
-
-**Happy coding! 🚀**

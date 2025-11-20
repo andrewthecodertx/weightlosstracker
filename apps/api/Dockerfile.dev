@@ -28,5 +28,9 @@ COPY apps/api ./
 # Expose ports
 EXPOSE 4000 5555
 
-# Start development server
-CMD ["pnpm", "run", "dev"]
+# Copy startup script
+COPY apps/api/start-dev.sh ./start-dev.sh
+RUN chmod +x ./start-dev.sh
+
+# Start development server with Prisma Studio
+CMD ["./start-dev.sh"]
