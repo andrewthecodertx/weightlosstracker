@@ -1,24 +1,29 @@
 FROM node:20-alpine
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install system dependencies: git, openssl, and pnpm
+RUN apk add --no-cache git openssl openssl-dev && npm install -g pnpm
 
-WORKDIR /app
+WORKDIR /workspace
 
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
+# Copy workspace root files (when context is root dir)
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 
-# Install dependencies
-RUN pnpm install
+# Copy package.json files for all workspace packages
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
 
-# Copy prisma schema
-COPY prisma ./prisma
+# Install all workspace dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy prisma schema for client generation
+COPY apps/api/prisma ./apps/api/prisma
 
 # Generate Prisma client
+WORKDIR /workspace/apps/api
 RUN pnpm exec prisma generate
 
-# Copy source code
-COPY . .
+# Copy all API source code
+COPY apps/api ./
 
 # Expose ports
 EXPOSE 4000 5555

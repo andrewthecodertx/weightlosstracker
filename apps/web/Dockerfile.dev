@@ -1,18 +1,25 @@
 FROM node:20-alpine
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install git (required for some pnpm dependencies) and pnpm
+RUN apk add --no-cache git && npm install -g pnpm
 
-WORKDIR /app
+WORKDIR /workspace
 
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
+# Copy workspace root files (when context is root dir)
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 
-# Install dependencies
-RUN pnpm install
+# Copy package.json files for all workspace packages
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
 
-# Copy source code
-COPY . .
+# Install all workspace dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy all web source code
+COPY apps/web ./apps/web
+
+# Set working directory to web app
+WORKDIR /workspace/apps/web
 
 # Expose port
 EXPOSE 3000

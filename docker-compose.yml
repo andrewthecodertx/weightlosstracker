@@ -76,8 +76,8 @@ services:
   # Backend API (Node.js + Express)
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: apps/api/Dockerfile.dev
     container_name: weight-tracker-api
     environment:
       NODE_ENV: development
@@ -93,9 +93,8 @@ services:
       - '4000:4000'
       - '5555:5555' # Prisma Studio
     volumes:
-      - ./apps/api:/app
-      - /app/node_modules
-      - ./apps/api/prisma:/app/prisma
+      - ./apps/api/src:/workspace/apps/api/src
+      - ./apps/api/prisma:/workspace/apps/api/prisma
     depends_on:
       postgres:
         condition: service_healthy
@@ -103,13 +102,12 @@ services:
         condition: service_healthy
     networks:
       - weight-tracker-network
-    command: pnpm run dev
 
   # Frontend Web App (Astro)
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: apps/web/Dockerfile.dev
     container_name: weight-tracker-web
     environment:
       NODE_ENV: development
@@ -117,11 +115,10 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./apps/web:/app
-      - /app/node_modules
+      - ./apps/web/src:/workspace/apps/web/src
+      - ./apps/web/public:/workspace/apps/web/public
     networks:
       - weight-tracker-network
-    command: pnpm run dev
 
 networks:
   weight-tracker-network:

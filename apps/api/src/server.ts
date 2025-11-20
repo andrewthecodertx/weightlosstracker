@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { logger } from './lib/logger.js';
 import { healthRouter } from './routes/health.js';
+import { authRouter } from './routes/auth.js';
 
 // Load environment variables
 dotenv.config();
@@ -28,6 +29,7 @@ app.use(morgan('combined', { stream: { write: (msg) => logger.info(msg.trim()) }
 
 // Routes
 app.use('/health', healthRouter);
+app.use('/auth', authRouter);
 
 // Basic route
 app.get('/', (req, res) => {

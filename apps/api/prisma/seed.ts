@@ -18,12 +18,12 @@ async function main() {
       bio: 'Fitness enthusiast on a weight loss journey!',
       profile: {
         create: {
-          currentWeight: 85.5,
-          goalWeight: 75.0,
-          height: 175,
+          currentWeight: 188.5, // 85.5 kg = 188.5 lbs
+          goalWeight: 165.3, // 75.0 kg = 165.3 lbs
+          height: 69, // 175 cm = 69 inches (5'9")
           activityLevel: 'moderate',
           gender: 'male',
-          preferredUnits: 'metric',
+          preferredUnits: 'imperial',
         },
       },
     },
@@ -38,12 +38,12 @@ async function main() {
       bio: 'Health coach and weight loss supporter',
       profile: {
         create: {
-          currentWeight: 68.0,
-          goalWeight: 62.0,
-          height: 165,
+          currentWeight: 149.9, // 68.0 kg = 149.9 lbs
+          goalWeight: 136.7, // 62.0 kg = 136.7 lbs
+          height: 65, // 165 cm = 65 inches (5'5")
           activityLevel: 'active',
           gender: 'female',
-          preferredUnits: 'metric',
+          preferredUnits: 'imperial',
         },
       },
     },
@@ -58,12 +58,12 @@ async function main() {
       bio: 'Started my journey 3 months ago!',
       profile: {
         create: {
-          currentWeight: 92.3,
-          goalWeight: 80.0,
-          height: 180,
+          currentWeight: 203.5, // 92.3 kg = 203.5 lbs
+          goalWeight: 176.4, // 80.0 kg = 176.4 lbs
+          height: 71, // 180 cm = 71 inches (5'11")
           activityLevel: 'light',
           gender: 'male',
-          preferredUnits: 'metric',
+          preferredUnits: 'imperial',
         },
       },
     },
@@ -82,7 +82,7 @@ async function main() {
 
     weightEntries.push({
       userId: user1.id,
-      weight: 85.5 - (30 - i) * 0.15, // Losing ~0.15kg per day
+      weight: 188.5 - (30 - i) * 0.33, // Losing ~0.33 lbs per day (0.15 kg)
       recordedAt: date,
       notes: i === 30 ? 'Starting my journey!' : i === 0 ? 'Feeling great!' : undefined,
     });
@@ -95,7 +95,7 @@ async function main() {
 
     weightEntries.push({
       userId: user2.id,
-      weight: 68.0 - (20 - i) * 0.1,
+      weight: 149.9 - (20 - i) * 0.22, // Losing ~0.22 lbs per day (0.1 kg)
       recordedAt: date,
     });
   }
@@ -116,20 +116,20 @@ async function main() {
           {
             userId: user1.id,
             role: 'admin',
-            startingWeight: 85.5,
-            weightLossGoal: 10.5,
+            startingWeight: 188.5, // 85.5 kg
+            weightLossGoal: 23.1, // 10.5 kg
           },
           {
             userId: user2.id,
             role: 'moderator',
-            startingWeight: 68.0,
-            weightLossGoal: 6.0,
+            startingWeight: 149.9, // 68.0 kg
+            weightLossGoal: 13.2, // 6.0 kg
           },
           {
             userId: user3.id,
             role: 'member',
-            startingWeight: 92.3,
-            weightLossGoal: 12.3,
+            startingWeight: 203.5, // 92.3 kg
+            weightLossGoal: 27.1, // 12.3 kg
           },
         ],
       },
@@ -144,7 +144,7 @@ async function main() {
       authorId: user1.id,
       teamId: team.id,
       title: 'My First Week Progress',
-      content: 'Just completed my first week! Down 2kg already. Feeling motivated!',
+      content: 'Just completed my first week! Down 4.4 lbs already. Feeling motivated!',
       postType: 'milestone',
       visibility: 'team',
       likesCount: 5,
@@ -220,21 +220,21 @@ async function main() {
         create: [
           {
             userId: user1.id,
-            startingValue: 85.5,
-            currentValue: 85.5,
-            targetValue: 81.2,
+            startingValue: 188.5, // 85.5 kg
+            currentValue: 188.5,
+            targetValue: 179.0, // 81.2 kg
           },
           {
             userId: user2.id,
-            startingValue: 68.0,
-            currentValue: 68.0,
-            targetValue: 64.6,
+            startingValue: 149.9, // 68.0 kg
+            currentValue: 149.9,
+            targetValue: 142.4, // 64.6 kg
           },
           {
             userId: user3.id,
-            startingValue: 92.3,
-            currentValue: 92.3,
-            targetValue: 87.7,
+            startingValue: 203.5, // 92.3 kg
+            currentValue: 203.5,
+            targetValue: 193.3, // 87.7 kg
           },
         ],
       },
@@ -261,11 +261,11 @@ async function main() {
         criteriaValue: { days: 7 },
       },
       {
-        name: '5kg Lost',
-        description: 'Lost 5 kilograms',
+        name: '11 lbs Lost',
+        description: 'Lost 11 pounds',
         points: 50,
         criteriaType: 'weight_loss',
-        criteriaValue: { amount: 5 },
+        criteriaValue: { amount: 11 },
       },
       {
         name: 'Team Player',
