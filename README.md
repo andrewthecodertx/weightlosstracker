@@ -3,6 +3,14 @@
 A comprehensive weight loss tracking application with team features, social
 posts, real-time messaging, and challenges.
 
+## Screenshots
+
+### Home Page
+![Home Page](frontpage.png)
+
+### Dashboard
+![Dashboard](dashboard.png)
+
 ## Tech Stack
 
 ### Frontend
