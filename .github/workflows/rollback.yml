@@ -1,0 +1,108 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Commit SHA to rollback to (leave empty for previous commit)'
+        required: false
+        type: string
+
+jobs:
+  rollback:
+    name: Rollback to Previous Version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit_sha || 'HEAD~1' }}
+          fetch-depth: 0
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Get commit information
+        id: commit_info
+        run: |
+          COMMIT_SHA=$(git rev-parse HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
+          echo "message=${COMMIT_MSG}" >> $GITHUB_OUTPUT
+          echo "Rolling back to: ${COMMIT_SHA}"
+          echo "Commit message: ${COMMIT_MSG}"
+
+      - name: Confirm rollback
+        run: |
+          echo "⚠️  ROLLBACK INITIATED"
+          echo "Rolling back to commit: ${{ steps.commit_info.outputs.sha }}"
+          echo "Message: ${{ steps.commit_info.outputs.message }}"
+
+      - name: Copy files to server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.env' \
+            --exclude='.env.local' \
+            --exclude='.env.production' \
+            --exclude='*.log' \
+            ./ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/weightlosstracker/
+
+      - name: Rebuild and restart containers
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /var/www/weightlosstracker
+
+            # Stop containers
+            docker compose -f docker-compose.server.yml down
+
+            # Rebuild
+            docker compose -f docker-compose.server.yml build --no-cache
+
+            # Start
+            docker compose -f docker-compose.server.yml up -d
+
+            # Wait for startup
+            sleep 15
+
+            # Check status
+            docker compose -f docker-compose.server.yml ps
+          EOF
+
+      - name: Health check
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /var/www/weightlosstracker
+
+            # Check API
+            API_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:4000/health)
+            if [ "$API_HEALTH" = "200" ]; then
+              echo "✅ API is healthy after rollback"
+            else
+              echo "❌ API health check failed (HTTP $API_HEALTH)"
+              exit 1
+            fi
+
+            # Check Web
+            WEB_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000)
+            if [ "$WEB_HEALTH" = "200" ]; then
+              echo "✅ Web is healthy after rollback"
+            else
+              echo "❌ Web health check failed (HTTP $WEB_HEALTH)"
+              exit 1
+            fi
+          EOF
+
+      - name: Rollback summary
+        run: |
+          echo "✅ Rollback completed successfully!"
+          echo "📦 Rolled back to commit: ${{ steps.commit_info.outputs.sha }}"
+          echo "🐳 Docker containers restarted"
+          echo "✅ Health checks passed"

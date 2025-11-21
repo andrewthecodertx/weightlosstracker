@@ -1,0 +1,149 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "echo 'SSH connection successful'"
+
+      - name: Create deployment directory
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            sudo mkdir -p /var/www/weightlosstracker
+            sudo chown -R $USER:$USER /var/www/weightlosstracker
+          EOF
+
+      - name: Copy files to server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.env' \
+            --exclude='.env.local' \
+            --exclude='*.log' \
+            --exclude='.DS_Store' \
+            ./ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/weightlosstracker/
+
+      - name: Create .env.production if not exists
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /var/www/weightlosstracker
+            if [ ! -f .env.production ]; then
+              echo "Creating .env.production from example..."
+              cp .env.production.example .env.production
+              echo "WARNING: Please configure .env.production with actual values!"
+            else
+              echo ".env.production already exists, skipping..."
+            fi
+          EOF
+
+      - name: Build and start Docker containers
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /var/www/weightlosstracker
+
+            # Load environment variables
+            export $(cat .env.production | grep -v '^#' | xargs)
+
+            # Stop existing containers gracefully
+            docker compose -f docker-compose.server.yml down || true
+
+            # Build images
+            echo "Building Docker images..."
+            docker compose -f docker-compose.server.yml build --no-cache
+
+            # Start containers
+            echo "Starting containers..."
+            docker compose -f docker-compose.server.yml up -d
+
+            # Wait for services to be healthy
+            echo "Waiting for services to start..."
+            sleep 15
+
+            # Check container status
+            docker compose -f docker-compose.server.yml ps
+          EOF
+
+      - name: Run database migrations
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /var/www/weightlosstracker
+
+            echo "Running database migrations..."
+            docker compose -f docker-compose.server.yml exec -T api pnpm prisma migrate deploy
+
+            echo "Migrations completed"
+          EOF
+
+      - name: Health check
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /var/www/weightlosstracker
+
+            echo "Performing health checks..."
+
+            # Check API health
+            API_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:4000/health)
+            if [ "$API_HEALTH" = "200" ]; then
+              echo "API is healthy"
+            else
+              echo "API health check failed (HTTP $API_HEALTH)"
+              exit 1
+            fi
+
+            # Check Web health
+            WEB_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000)
+            if [ "$WEB_HEALTH" = "200" ]; then
+              echo "✅ Web is healthy"
+            else
+              echo "Web health check failed (HTTP $WEB_HEALTH)"
+              exit 1
+            fi
+
+            # Show container status
+            docker compose -f docker-compose.server.yml ps
+          EOF
+
+      - name: Cleanup old Docker images
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+            echo "Cleaning up old Docker images..."
+            docker image prune -f
+            docker volume prune -f
+          EOF
+
+      - name: Deployment summary
+        run: |
+          echo "Deployment completed successfully!"
+          echo "Files deployed to: /var/www/weightlosstracker"
+          echo "Docker containers started"
+          echo "Health checks passed"
+          echo "View logs: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} 'cd /var/www/weightlosstracker && docker compose -f docker-compose.server.yml logs -f'"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Deployment failed!"
+          echo "Check the logs above for details"
+          echo "SSH to server: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}"
