@@ -12,6 +12,7 @@ const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   username: z.string().min(3).max(30),
+  preferredUnits: z.enum(['metric', 'imperial']).optional().default('imperial'),
 });
 
 const loginSchema = z.object({
@@ -72,7 +73,9 @@ router.post('/register', async (req, res) => {
         passwordHash,
         username: data.username,
         profile: {
-          create: {},
+          create: {
+            preferredUnits: data.preferredUnits,
+          },
         },
       },
       select: {
@@ -86,6 +89,7 @@ router.post('/register', async (req, res) => {
             currentWeight: true,
             goalWeight: true,
             height: true,
+            preferredUnits: true,
           },
         },
       },
