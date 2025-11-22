@@ -40,7 +40,7 @@ function generateTokens(userId: string) {
 }
 
 // POST /auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res): Promise<void> => {
   try {
     const data = registerSchema.parse(req.body);
 
@@ -129,7 +129,7 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res): Promise<void> => {
   try {
     const data = loginSchema.parse(req.body);
 
@@ -216,7 +216,7 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /auth/refresh
-router.post('/refresh', async (req, res) => {
+router.post('/refresh', async (req, res): Promise<void> => {
   try {
     const data = refreshSchema.parse(req.body);
 
@@ -288,7 +288,7 @@ router.post('/refresh', async (req, res) => {
 });
 
 // GET /auth/me - Get current user
-router.get('/me', async (req, res) => {
+router.get('/me', async (req, res): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
