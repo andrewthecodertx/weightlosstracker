@@ -22,8 +22,7 @@ jobs:
 
       - name: Copy files
         run: |
-          rsync -avz --delete -e \
-            ./* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/weightlosstracker/
+          scp -o StrictHostKeyChecking=no -r ./* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/weightlosstracker/
 
       - name: Create .env.production if not exists
         uses: appleboy/ssh-action@v1.0.3
