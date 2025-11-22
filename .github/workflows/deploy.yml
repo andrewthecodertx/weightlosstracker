@@ -23,12 +23,6 @@ jobs:
       - name: Copy files
         run: |
           rsync -avz --delete -e \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='.env' \
-            --exclude='.env.local' \
-            --exclude='*.log' \
-            --exclude='.DS_Store' \
             ./* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/weightlosstracker/
 
       - name: Create .env.production if not exists
