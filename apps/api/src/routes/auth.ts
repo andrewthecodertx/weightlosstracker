@@ -129,7 +129,8 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /auth/login
-router.post('/login', async (req, res): Promise<void> => {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+router.post('/login', async (req, res) => {
   try {
     const data = loginSchema.parse(req.body);
 
@@ -216,7 +217,8 @@ router.post('/login', async (req, res): Promise<void> => {
 });
 
 // POST /auth/refresh
-router.post('/refresh', async (req, res): Promise<void> => {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+router.post('/refresh', async (req, res) => {
   try {
     const data = refreshSchema.parse(req.body);
 
@@ -288,7 +290,8 @@ router.post('/refresh', async (req, res): Promise<void> => {
 });
 
 // GET /auth/me - Get current user
-router.get('/me', async (req, res): Promise<void> => {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+router.get('/me', async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
