@@ -107,26 +107,30 @@ sudo chown -R $USER:$USER /var/www/weightlosstracker
 # SSH to your server
 ssh user@your-server
 
-# Create .env.production manually
+# Create .env manually
 cd /var/www/weightlosstracker
-nano .env.production
+cp .env.example .env
+nano .env
 ```
 
-Add your production configuration:
+Add your production configuration (see `.env.example` for all options):
 
 ```bash
+BUILD_MODE=prod
+NODE_ENV=production
 POSTGRES_USER=weighttracker
 POSTGRES_PASSWORD=your-secure-password
-POSTGRES_DB=weighttracker_prod
-REDIS_PASSWORD=your-redis-password
+POSTGRES_DB=weighttracker
 JWT_SECRET=your-jwt-secret
 JWT_REFRESH_SECRET=your-refresh-secret
 SMTP_HOST=smtp.yourdomain.com
 SMTP_PORT=587
 SMTP_USER=noreply@yourdomain.com
-SMTP_PASS=your-smtp-password
+SMTP_PASSWORD=your-smtp-password
 CORS_ORIGIN=https://yourdomain.com
 PUBLIC_API_URL=https://yourdomain.com/api
+API_PORT=127.0.0.1:4000
+WEB_PORT=127.0.0.1:3000
 ```
 
 ## Usage
@@ -183,13 +187,13 @@ ssh user@your-server
 
 # Check container status
 cd /var/www/weightlosstracker
-docker compose -f docker-compose.server.yml ps
+docker compose ps
 
 # View logs
-docker compose -f docker-compose.server.yml logs -f
+docker compose logs -f
 
 # Check specific service
-docker compose -f docker-compose.server.yml logs -f api
+docker compose logs -f api
 ```
 
 ## Troubleshooting
@@ -215,9 +219,9 @@ docker compose -f docker-compose.server.yml logs -f api
 1. SSH to server and check logs:
    ```bash
    cd /var/www/weightlosstracker
-   docker compose -f docker-compose.server.yml logs
+   docker compose logs
    ```
-2. Verify `.env.production` has correct values
+2. Verify `.env` has correct values
 3. Check if database migrations succeeded
 4. Ensure ports 3000 and 4000 are available:
    ```bash
@@ -232,27 +236,27 @@ docker compose -f docker-compose.server.yml logs -f api
 
 1. Check database is running:
    ```bash
-   docker compose -f docker-compose.server.yml ps postgres
+   docker compose ps postgres
    ```
 2. Check database logs:
    ```bash
-   docker compose -f docker-compose.server.yml logs postgres
+   docker compose logs postgres
    ```
-3. Verify DATABASE_URL in `.env.production`
+3. Verify DATABASE_URL in `.env`
 4. Manually run migrations:
    ```bash
-   docker compose -f docker-compose.server.yml exec api pnpm prisma migrate deploy
+   docker compose exec api pnpm prisma migrate deploy
    ```
 
-### .env.production Not Found
+### .env Not Found
 
-**Problem:** First deployment fails because .env.production doesn't exist
+**Problem:** First deployment fails because .env doesn't exist
 
 **Solution:**
 The workflow will create it from the example, but you need to:
 
 1. SSH to server
-2. Edit `/var/www/weightlosstracker/.env.production`
+2. Edit `/var/www/weightlosstracker/.env`
 3. Add your actual production values
 4. Re-run the deployment workflow
 
@@ -266,7 +270,7 @@ The workflow will create it from the example, but you need to:
 
 ⚠️ **Never commit sensitive data:**
 
-- `.env.production` is in `.gitignore`
+- `.env` is in `.gitignore`
 - Secrets are stored securely in GitHub
 - Private keys never appear in logs
 
@@ -276,7 +280,7 @@ The workflow will create it from the example, but you need to:
 - Rotate SSH keys periodically
 - Use separate SSH key just for deployments
 - Limit SSH user permissions (use `sudo` only when needed)
-- Keep `.env.production` backed up securely
+- Keep `.env` backed up securely
 
 ## Nginx Configuration
 
@@ -296,13 +300,13 @@ sudo systemctl reload nginx
 
 ```bash
 # View deployment status
-ssh user@server "cd /var/www/weightlosstracker && docker compose -f docker-compose.server.yml ps"
+ssh user@server "cd /var/www/weightlosstracker && docker compose ps"
 
 # Restart specific service
-ssh user@server "cd /var/www/weightlosstracker && docker compose -f docker-compose.server.yml restart api"
+ssh user@server "cd /var/www/weightlosstracker && docker compose restart api"
 
 # View live logs
-ssh user@server "cd /var/www/weightlosstracker && docker compose -f docker-compose.server.yml logs -f"
+ssh user@server "cd /var/www/weightlosstracker && docker compose logs -f"
 
 # Check disk space
 ssh user@server "df -h"

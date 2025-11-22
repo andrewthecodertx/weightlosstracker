@@ -1,6 +1,8 @@
 # Docker Setup Guide
 
-This project uses a single `docker-compose.yml` file that works across all environments. Environment-specific configuration is controlled through environment variables.
+This project uses a single `docker-compose.yml` file that works across all
+environments. Environment-specific configuration is controlled through
+environment variables.
 
 ## Quick Start
 
@@ -36,7 +38,8 @@ docker-compose --profile with-nginx up -d
 
 ## Environment Variables
 
-The docker-compose.yml uses environment variables with sensible defaults. You can override them by:
+The docker-compose.yml uses environment variables with sensible defaults. You
+can override them by:
 
 1. Creating a `.env` file (recommended)
 2. Exporting environment variables

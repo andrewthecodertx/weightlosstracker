@@ -61,19 +61,19 @@ jobs:
             cd /var/www/weightlosstracker
 
             # Stop containers
-            docker compose -f docker-compose.server.yml down
+            docker compose down
 
             # Rebuild
-            docker compose -f docker-compose.server.yml build --no-cache
+            docker compose build --no-cache
 
             # Start
-            docker compose -f docker-compose.server.yml up -d
+            docker compose up -d
 
             # Wait for startup
             sleep 15
 
             # Check status
-            docker compose -f docker-compose.server.yml ps
+            docker compose ps
           EOF
 
       - name: Health check
