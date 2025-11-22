@@ -40,7 +40,7 @@ function generateTokens(userId: string) {
 }
 
 // POST /auth/register
-router.post('/register', async (req, res): Promise<void> => {
+router.post('/register', async (req, res) => {
   try {
     const data = registerSchema.parse(req.body);
 
@@ -98,7 +98,7 @@ router.post('/register', async (req, res): Promise<void> => {
 
     logger.info(`User registered: ${user.email}`);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: {
         user,
@@ -185,7 +185,7 @@ router.post('/login', async (req, res): Promise<void> => {
 
     logger.info(`User logged in: ${user.email}`);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user: userWithoutPassword,
@@ -258,7 +258,7 @@ router.post('/refresh', async (req, res): Promise<void> => {
     // Generate new tokens
     const tokens = generateTokens(user.id);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         user,
@@ -337,7 +337,7 @@ router.get('/me', async (req, res): Promise<void> => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: { user },
     });
