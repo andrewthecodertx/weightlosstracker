@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import { Router, type Router as RouterType } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { prisma } from '../lib/db.js';
 import { logger } from '../lib/logger.js';
 
-const router = Router();
+const router: RouterType = Router();
 
 // Validation schemas
 const registerSchema = z.object({

@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import { Router, type Router as RouterType } from 'express';
 import { prisma } from '../lib/db.js';
 import { redis } from '../lib/redis.js';
 
-export const healthRouter = Router();
+export const healthRouter: RouterType = Router();
 
 // Liveness probe - is the app running?
 healthRouter.get('/', (req, res) => {
