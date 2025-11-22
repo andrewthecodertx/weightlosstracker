@@ -51,7 +51,7 @@ jobs:
       - name: Build and start Docker containers
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ sectret.SSH_HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -69,7 +69,7 @@ jobs:
       - name: Run database migrations
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ sectret.SSH_HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -81,7 +81,7 @@ jobs:
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ sectret.SSH_HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -106,7 +106,7 @@ jobs:
       - name: Cleanup old Docker images
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ sectret.SSH_HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
