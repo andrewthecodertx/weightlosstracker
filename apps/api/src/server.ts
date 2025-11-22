@@ -52,24 +52,17 @@ app.use((req, res) => {
 });
 
 // Error handler
-app.use(
-  (
-    err: Error,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    logger.error('Unhandled error:', err);
+app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  logger.error('Unhandled error:', err);
 
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_SERVER_ERROR',
-        message: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message,
-      },
-    });
-  }
-);
+  res.status(500).json({
+    success: false,
+    error: {
+      code: 'INTERNAL_SERVER_ERROR',
+      message: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message,
+    },
+  });
+});
 
 // Start server
 app.listen(PORT, () => {

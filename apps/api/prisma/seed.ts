@@ -178,7 +178,7 @@ async function main() {
       {
         postId: post1.id,
         authorId: user3.id,
-        content: 'Inspiring! What\'s your secret?',
+        content: "Inspiring! What's your secret?",
       },
       {
         postId: post2.id,
@@ -209,7 +209,7 @@ async function main() {
     data: {
       teamId: team.id,
       name: '30-Day Weight Loss Challenge',
-      description: 'Let\'s support each other in losing weight over the next 30 days!',
+      description: "Let's support each other in losing weight over the next 30 days!",
       challengeType: 'weight_loss_percentage',
       startDate,
       endDate,
@@ -244,7 +244,7 @@ async function main() {
   console.log('✅ Created challenge:', challenge.name);
 
   // Create achievements
-  const achievements = await prisma.achievement.createMany({
+  await prisma.achievement.createMany({
     data: [
       {
         name: 'First Weigh-In',
@@ -316,11 +316,7 @@ async function main() {
       teamId: team.id,
       name: 'Fitness Warriors Chat',
       participants: {
-        create: [
-          { userId: user1.id },
-          { userId: user2.id },
-          { userId: user3.id },
-        ],
+        create: [{ userId: user1.id }, { userId: user2.id }, { userId: user3.id }],
       },
     },
   });
@@ -336,7 +332,7 @@ async function main() {
       {
         conversationId: conversation.id,
         senderId: user2.id,
-        content: 'Welcome everyone! Let\'s support each other 💪',
+        content: "Welcome everyone! Let's support each other 💪",
       },
       {
         conversationId: conversation.id,

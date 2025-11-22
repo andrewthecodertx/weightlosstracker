@@ -26,11 +26,9 @@ const refreshSchema = z.object({
 
 // Helper to generate tokens
 function generateTokens(userId: string) {
-  const accessToken = jwt.sign(
-    { userId },
-    process.env.JWT_SECRET || 'dev-jwt-secret',
-    { expiresIn: '15m' }
-  );
+  const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET || 'dev-jwt-secret', {
+    expiresIn: '15m',
+  });
 
   const refreshToken = jwt.sign(
     { userId },
@@ -182,6 +180,7 @@ router.post('/login', async (req, res) => {
     const tokens = generateTokens(user.id);
 
     // Remove password hash from response
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...userWithoutPassword } = user;
 
     logger.info(`User logged in: ${user.email}`);
@@ -303,10 +302,9 @@ router.get('/me', async (req, res) => {
     }
 
     const token = authHeader.substring(7);
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || 'dev-jwt-secret'
-    ) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret') as {
+      userId: string;
+    };
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },

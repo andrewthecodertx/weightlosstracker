@@ -38,17 +38,17 @@ class RedisClient {
     });
   }
 
-  async get(key: string): Promise<any> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     try {
       const data = await this.client.get(key);
-      return data ? JSON.parse(data) : null;
+      return data ? (JSON.parse(data) as T) : null;
     } catch (error) {
       logger.error(`Redis GET error for key ${key}:`, error);
       return null;
     }
   }
 
-  async set(key: string, value: any, ttl: number = 300): Promise<void> {
+  async set(key: string, value: unknown, ttl: number = 300): Promise<void> {
     try {
       await this.client.setex(key, ttl, JSON.stringify(value));
     } catch (error) {

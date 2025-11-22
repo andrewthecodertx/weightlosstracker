@@ -1058,11 +1058,13 @@ import { z } from 'zod';
 
 export const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
-  username: z.string()
+  username: z
+    .string()
     .min(3, 'Username must be at least 3 characters')
     .max(20, 'Username must be at most 20 characters')
     .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
-  password: z.string()
+  password: z
+    .string()
     .min(8, 'Password must be at least 8 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
@@ -1070,9 +1072,7 @@ export const registerSchema = z.object({
 });
 
 export const weightEntrySchema = z.object({
-  weight: z.number()
-    .positive('Weight must be positive')
-    .max(1000, 'Weight seems unrealistic'),
+  weight: z.number().positive('Weight must be positive').max(1000, 'Weight seems unrealistic'),
   recordedAt: z.string().datetime().optional(),
   notes: z.string().max(1000).optional(),
   bodyFatPercentage: z.number().min(0).max(100).optional(),
@@ -1100,7 +1100,7 @@ export const validate = (schema: ZodSchema) => {
           error: {
             code: 'VALIDATION_ERROR',
             message: 'Invalid input data',
-            details: error.errors.map(err => ({
+            details: error.errors.map((err) => ({
               field: err.path.join('.'),
               message: err.message,
             })),
@@ -1212,11 +1212,11 @@ export const securityMiddleware = helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      connectSrc: ["'self'", "https://api.weighttracker.com", "wss://api.weighttracker.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      connectSrc: ["'self'", 'https://api.weighttracker.com', 'wss://api.weighttracker.com'],
       mediaSrc: ["'self'"],
       objectSrc: ["'none'"],
       frameSrc: ["'none'"],
@@ -1291,8 +1291,8 @@ export const upload = multer({
 export const validateUploadedFile = async (file: Express.Multer.File) => {
   // Verify file signature (magic numbers)
   const fileSignatures = {
-    'image/jpeg': [0xFF, 0xD8, 0xFF],
-    'image/png': [0x89, 0x50, 0x4E, 0x47],
+    'image/jpeg': [0xff, 0xd8, 0xff],
+    'image/png': [0x89, 0x50, 0x4e, 0x47],
     'image/webp': [0x52, 0x49, 0x46, 0x46],
   };
 
@@ -1401,13 +1401,7 @@ export class CacheService {
   async invalidatePattern(pattern: string): Promise<void> {
     let cursor = '0';
     do {
-      const [newCursor, keys] = await redis.client.scan(
-        cursor,
-        'MATCH',
-        pattern,
-        'COUNT',
-        100
-      );
+      const [newCursor, keys] = await redis.client.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
       cursor = newCursor;
 
       if (keys.length > 0) {
@@ -1419,11 +1413,7 @@ export class CacheService {
   /**
    * Cache-aside pattern with race condition prevention
    */
-  async getOrSet<T>(
-    key: string,
-    fetcher: () => Promise<T>,
-    ttl: number = 300
-  ): Promise<T> {
+  async getOrSet<T>(key: string, fetcher: () => Promise<T>, ttl: number = 300): Promise<T> {
     // Try to get from cache
     const cached = await redis.get(key);
     if (cached !== null) {
@@ -1455,7 +1445,7 @@ export class CacheService {
       }
     } else {
       // Another process is fetching, wait and retry
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       return this.getOrSet(key, fetcher, ttl);
     }
   }
@@ -1474,11 +1464,7 @@ export class WeightEntryRepository {
   /**
    * Get weight history with pagination and caching
    */
-  async getWeightHistory(
-    userId: string,
-    page: number = 1,
-    limit: number = 20
-  ) {
+  async getWeightHistory(userId: string, page: number = 1, limit: number = 20) {
     const cacheKey = `weight:history:${userId}:${page}:${limit}`;
 
     return cache.getOrSet(
@@ -1831,7 +1817,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://user:password@db:5432/weighttracker
@@ -1850,14 +1836,14 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: weighttracker
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
@@ -1898,37 +1884,37 @@ spec:
         app: weight-tracker-api
     spec:
       containers:
-      - name: api
-        image: weighttracker/api:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: url
-        - name: REDIS_HOST
-          value: redis-service
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "2000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: api
+          image: weighttracker/api:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: url
+            - name: REDIS_HOST
+              value: redis-service
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '2000m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ```
 
 ### 4. CI/CD Pipeline (GitHub Actions)
@@ -2157,20 +2143,24 @@ Closes #123
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] Manual testing completed
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Comments added for complex logic
@@ -2181,6 +2171,7 @@ Brief description of changes
 ## Screenshots (if applicable)
 
 ## Related Issues
+
 Closes #123
 ```
 
@@ -2307,9 +2298,9 @@ describe('WeightEntryService', () => {
     });
 
     it('should throw error for invalid weight', async () => {
-      await expect(
-        service.createEntry('user-1', { weight: -10 })
-      ).rejects.toThrow('Weight must be positive');
+      await expect(service.createEntry('user-1', { weight: -10 })).rejects.toThrow(
+        'Weight must be positive'
+      );
     });
   });
 });
@@ -2422,11 +2413,11 @@ export const options = {
     { duration: '5m', target: 100 }, // Stay at 100 users
     { duration: '2m', target: 200 }, // Ramp up to 200 users
     { duration: '5m', target: 200 }, // Stay at 200 users
-    { duration: '2m', target: 0 },   // Ramp down
+    { duration: '2m', target: 0 }, // Ramp down
   ],
   thresholds: {
     http_req_duration: ['p(95)<500'], // 95% of requests under 500ms
-    http_req_failed: ['rate<0.01'],   // Less than 1% errors
+    http_req_failed: ['rate<0.01'], // Less than 1% errors
   },
 };
 
@@ -2475,9 +2466,7 @@ export function initSentry() {
     environment: process.env.NODE_ENV,
     tracesSampleRate: 0.1, // 10% of transactions
     profilesSampleRate: 0.1,
-    integrations: [
-      new ProfilingIntegration(),
-    ],
+    integrations: [new ProfilingIntegration()],
     beforeSend(event, hint) {
       // Filter out sensitive data
       if (event.request) {
@@ -2594,10 +2583,7 @@ export const logger = winston.createLogger({
   transports: [
     // Console output
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      ),
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
     }),
 
     // Error log file
@@ -2666,7 +2652,7 @@ router.get('/ready', async (req, res) => {
     await redis.client.ping();
     checks.redis = true;
 
-    const allHealthy = Object.values(checks).every(v => v);
+    const allHealthy = Object.values(checks).every((v) => v);
 
     res.status(allHealthy ? 200 : 503).json({
       status: allHealthy ? 'ready' : 'not ready',
@@ -2701,8 +2687,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "High error rate detected"
-          description: "Error rate is {{ $value }} errors/sec"
+          summary: 'High error rate detected'
+          description: 'Error rate is {{ $value }} errors/sec'
 
       - alert: HighResponseTime
         expr: histogram_quantile(0.95, http_request_duration_seconds) > 1
@@ -2710,8 +2696,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High response time"
-          description: "P95 latency is {{ $value }}s"
+          summary: 'High response time'
+          description: 'P95 latency is {{ $value }}s'
 
       - alert: DatabaseConnectionPoolExhausted
         expr: db_connections_active / db_connections_max > 0.9
@@ -2719,7 +2705,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Database connection pool nearly exhausted"
+          summary: 'Database connection pool nearly exhausted'
 
       - alert: RedisMemoryHigh
         expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
@@ -2727,7 +2713,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "Redis memory usage high"
+          summary: 'Redis memory usage high'
 ```
 
 ---
@@ -2736,32 +2722,32 @@ groups:
 
 ### Technical Risks
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Database performance degradation with scale | High | Medium | Implement caching, read replicas, query optimization, partitioning |
-| WebSocket server becomes bottleneck | High | Medium | Redis adapter for horizontal scaling, connection limits |
-| Third-party service outages (SendGrid, S3) | Medium | Low | Circuit breakers, graceful degradation, alternative providers |
-| Data loss from hardware failure | High | Low | Automated backups, replication, disaster recovery plan |
-| Security breach / data leak | Critical | Low | Security audits, penetration testing, encryption, monitoring |
-| Redis cache failure causing cascade | Medium | Low | Fallback to database, circuit breaker pattern |
-| Rate limiting bypass | Medium | Medium | Multiple layers (API + WAF), IP blocking, CAPTCHA |
+| Risk                                        | Impact   | Probability | Mitigation                                                         |
+| ------------------------------------------- | -------- | ----------- | ------------------------------------------------------------------ |
+| Database performance degradation with scale | High     | Medium      | Implement caching, read replicas, query optimization, partitioning |
+| WebSocket server becomes bottleneck         | High     | Medium      | Redis adapter for horizontal scaling, connection limits            |
+| Third-party service outages (SendGrid, S3)  | Medium   | Low         | Circuit breakers, graceful degradation, alternative providers      |
+| Data loss from hardware failure             | High     | Low         | Automated backups, replication, disaster recovery plan             |
+| Security breach / data leak                 | Critical | Low         | Security audits, penetration testing, encryption, monitoring       |
+| Redis cache failure causing cascade         | Medium   | Low         | Fallback to database, circuit breaker pattern                      |
+| Rate limiting bypass                        | Medium   | Medium      | Multiple layers (API + WAF), IP blocking, CAPTCHA                  |
 
 ### Business Risks
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Low user adoption | High | Medium | Beta testing, user feedback, marketing strategy |
-| Competition from established apps | Medium | High | Unique features (team challenges), superior UX |
-| Regulatory compliance (GDPR/CCPA) | High | Medium | Legal review, privacy-first design, compliance tools |
-| Hosting costs exceed budget | Medium | Medium | Cost monitoring, optimization, auto-scaling limits |
+| Risk                              | Impact | Probability | Mitigation                                           |
+| --------------------------------- | ------ | ----------- | ---------------------------------------------------- |
+| Low user adoption                 | High   | Medium      | Beta testing, user feedback, marketing strategy      |
+| Competition from established apps | Medium | High        | Unique features (team challenges), superior UX       |
+| Regulatory compliance (GDPR/CCPA) | High   | Medium      | Legal review, privacy-first design, compliance tools |
+| Hosting costs exceed budget       | Medium | Medium      | Cost monitoring, optimization, auto-scaling limits   |
 
 ### Timeline Risks
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Feature scope creep | High | High | Strict MVP definition, phased rollout |
-| Underestimated development time | Medium | High | Buffer time in estimates, prioritization |
-| Key developer unavailability | Medium | Low | Knowledge sharing, documentation, code reviews |
+| Risk                            | Impact | Probability | Mitigation                                     |
+| ------------------------------- | ------ | ----------- | ---------------------------------------------- |
+| Feature scope creep             | High   | High        | Strict MVP definition, phased rollout          |
+| Underestimated development time | Medium | High        | Buffer time in estimates, prioritization       |
+| Key developer unavailability    | Medium | Low         | Knowledge sharing, documentation, code reviews |
 
 ---
 

@@ -5,6 +5,7 @@ This guide is for deploying to a server that already has Nginx installed and run
 ## Overview
 
 Since your server already has Nginx running on port 80/443, we'll:
+
 1. Run the application containers (API, Web, PostgreSQL, Redis) in Docker
 2. Expose containers only to localhost (127.0.0.1)
 3. Configure your existing Nginx to reverse proxy to the containers
@@ -49,6 +50,7 @@ nano .env.production
 ```
 
 Required values:
+
 ```bash
 POSTGRES_USER=weighttracker
 POSTGRES_PASSWORD=<generate-strong-password>
@@ -88,6 +90,7 @@ docker compose -f docker-compose.server.yml logs -f
 ```
 
 The containers will be accessible at:
+
 - API: http://127.0.0.1:4000 (localhost only)
 - Web: http://127.0.0.1:3000 (localhost only)
 
@@ -125,6 +128,7 @@ sudo systemctl reload nginx
 ### Important: Update the config file
 
 In `/etc/nginx/sites-available/weighttracker`, replace:
+
 - `yourdomain.com` with your actual domain
 - SSL certificate paths if different
 
@@ -146,6 +150,7 @@ sudo certbot renew --dry-run
 ```
 
 If you already have certificates, update the paths in the Nginx config:
+
 ```nginx
 ssl_certificate /path/to/your/fullchain.pem;
 ssl_certificate_key /path/to/your/privkey.pem;
@@ -191,6 +196,7 @@ sudo nano /etc/systemd/system/weighttracker.service
 ```
 
 Add:
+
 ```ini
 [Unit]
 Description=Weight Tracker Application
@@ -213,6 +219,7 @@ WantedBy=multi-user.target
 ```
 
 Enable and start:
+
 ```bash
 sudo systemctl enable weighttracker
 sudo systemctl start weighttracker

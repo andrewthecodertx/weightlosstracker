@@ -5,9 +5,9 @@ const logFormat = winston.format.combine(
   winston.format.errors({ stack: true }),
   winston.format.printf(({ timestamp, level, message, stack }) => {
     if (stack) {
-      return `${timestamp} [${level}]: ${message}\n${stack}`;
+      return `${String(timestamp)} [${String(level)}]: ${String(message)}\n${String(stack)}`;
     }
-    return `${timestamp} [${level}]: ${message}`;
+    return `${String(timestamp)} [${String(level)}]: ${String(message)}`;
   })
 );
 

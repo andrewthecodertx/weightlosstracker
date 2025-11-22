@@ -42,14 +42,14 @@ That's it!
 
 ## Available Services
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| **Web App** | <http://localhost:3000> | See test accounts below |
-| **API** | <http://localhost:4000> | - |
-| **Nginx Proxy** | <http://localhost> | - |
-| **Prisma Studio** | <http://localhost:5555>* | - |
-| **Redis Commander** | <http://localhost:8081> | - |
-| **MailHog** | <http://localhost:8025> | - |
+| Service             | URL                       | Credentials             |
+| ------------------- | ------------------------- | ----------------------- |
+| **Web App**         | <http://localhost:3000>   | See test accounts below |
+| **API**             | <http://localhost:4000>   | -                       |
+| **Nginx Proxy**     | <http://localhost>        | -                       |
+| **Prisma Studio**   | <http://localhost:5555>\* | -                       |
+| **Redis Commander** | <http://localhost:8081>   | -                       |
+| **MailHog**         | <http://localhost:8025>   | -                       |
 
 \* Run `pnpm db:studio` to start
 

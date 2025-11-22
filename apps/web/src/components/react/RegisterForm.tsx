@@ -48,9 +48,23 @@ export default function RegisterForm() {
         // Redirect to dashboard
         window.location.href = '/dashboard';
       }
-    } catch (err: any) {
+    } catch (err) {
       setError(
-        err.response?.data?.error?.message || 'Registration failed. Please try again.'
+        err &&
+          typeof err === 'object' &&
+          'response' in err &&
+          err.response &&
+          typeof err.response === 'object' &&
+          'data' in err.response &&
+          err.response.data &&
+          typeof err.response.data === 'object' &&
+          'error' in err.response.data &&
+          err.response.data.error &&
+          typeof err.response.data.error === 'object' &&
+          'message' in err.response.data.error &&
+          typeof err.response.data.error.message === 'string'
+          ? err.response.data.error.message
+          : 'Registration failed. Please try again.'
       );
     } finally {
       setLoading(false);
@@ -130,7 +144,10 @@ export default function RegisterForm() {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Confirm Password
             </label>
             <input
@@ -147,7 +164,10 @@ export default function RegisterForm() {
           </div>
 
           <div>
-            <label htmlFor="preferredUnits" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="preferredUnits"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Preferred Units
             </label>
             <select

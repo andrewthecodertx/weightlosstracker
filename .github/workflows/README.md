@@ -9,10 +9,12 @@ This directory contains automated deployment workflows for the Weight Tracker ap
 Automatically deploys the application when code is pushed to the `main` branch.
 
 **Triggers:**
+
 - Automatic: Push to `main` branch
 - Manual: Can be triggered from GitHub Actions tab
 
 **What it does:**
+
 1. ✅ Connects to server via SSH
 2. 📦 Copies all necessary files to `/var/www/weightlosstracker`
 3. 🐳 Builds Docker images
@@ -22,6 +24,7 @@ Automatically deploys the application when code is pushed to the `main` branch.
 7. 🧹 Cleans up old Docker images
 
 **Required Secrets:**
+
 - `SSH_HOST` - Server IP or hostname
 - `SSH_USERNAME` - SSH user (must have Docker and sudo permissions)
 - `SSH_PRIVATE_KEY` - Private SSH key for authentication
@@ -31,13 +34,16 @@ Automatically deploys the application when code is pushed to the `main` branch.
 Rolls back to a previous version in case of issues.
 
 **Triggers:**
+
 - Manual only (from GitHub Actions tab)
 
 **Options:**
+
 - Specify a commit SHA to rollback to
 - Or leave empty to rollback to the previous commit
 
 **What it does:**
+
 1. ⏪ Checks out specified commit
 2. 📦 Deploys that version to server
 3. 🐳 Rebuilds and restarts containers
@@ -107,6 +113,7 @@ nano .env.production
 ```
 
 Add your production configuration:
+
 ```bash
 POSTGRES_USER=weighttracker
 POSTGRES_PASSWORD=your-secure-password
@@ -133,6 +140,7 @@ git push origin main
 ```
 
 The workflow will automatically:
+
 - Build and deploy the application
 - Run migrations
 - Restart containers
@@ -191,6 +199,7 @@ docker compose -f docker-compose.server.yml logs -f api
 **Problem:** Cannot connect to server
 
 **Solutions:**
+
 1. Verify `SSH_HOST` secret is correct (IP or domain)
 2. Verify `SSH_USERNAME` secret matches server user
 3. Verify `SSH_PRIVATE_KEY` is complete (including BEGIN/END lines)
@@ -202,6 +211,7 @@ docker compose -f docker-compose.server.yml logs -f api
 **Problem:** Containers start but health checks fail
 
 **Solutions:**
+
 1. SSH to server and check logs:
    ```bash
    cd /var/www/weightlosstracker
@@ -219,6 +229,7 @@ docker compose -f docker-compose.server.yml logs -f api
 **Problem:** Migrations don't run or fail
 
 **Solutions:**
+
 1. Check database is running:
    ```bash
    docker compose -f docker-compose.server.yml ps postgres
@@ -239,6 +250,7 @@ docker compose -f docker-compose.server.yml logs -f api
 
 **Solution:**
 The workflow will create it from the example, but you need to:
+
 1. SSH to server
 2. Edit `/var/www/weightlosstracker/.env.production`
 3. Add your actual production values
@@ -253,11 +265,13 @@ The workflow will create it from the example, but you need to:
 ## Security Notes
 
 ⚠️ **Never commit sensitive data:**
+
 - `.env.production` is in `.gitignore`
 - Secrets are stored securely in GitHub
 - Private keys never appear in logs
 
 ✅ **Best practices:**
+
 - Use strong passwords for database/Redis
 - Rotate SSH keys periodically
 - Use separate SSH key just for deployments
