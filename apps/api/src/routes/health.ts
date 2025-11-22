@@ -5,7 +5,7 @@ import { redis } from '../lib/redis.js';
 export const healthRouter: RouterType = Router();
 
 // Liveness probe - is the app running?
-healthRouter.get('/', (req, res) => {
+healthRouter.get('/', (_req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -13,7 +13,7 @@ healthRouter.get('/', (req, res) => {
 });
 
 // Readiness probe - is the app ready to serve traffic?
-healthRouter.get('/ready', async (req, res) => {
+healthRouter.get('/ready', async (_req, res) => {
   const checks = {
     database: false,
     redis: false,

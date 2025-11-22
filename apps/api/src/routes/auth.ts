@@ -118,7 +118,7 @@ router.post('/register', async (req, res) => {
     }
 
     logger.error('Registration error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'REGISTRATION_FAILED',
@@ -205,7 +205,7 @@ router.post('/login', async (req, res) => {
     }
 
     logger.error('Login error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'LOGIN_FAILED',
@@ -277,7 +277,7 @@ router.post('/refresh', async (req, res) => {
     }
 
     logger.error('Token refresh error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'REFRESH_FAILED',
@@ -353,7 +353,7 @@ router.get('/me', async (req, res) => {
     }
 
     logger.error('Get user error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: {
         code: 'FETCH_FAILED',
