@@ -22,8 +22,7 @@ jobs:
 
       - name: Copy files
         run: |
-          rsync -avz --delete \
-            -e StrictHostKeyChecking=no \
+          rsync -avz --delete -e \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='.env' \
